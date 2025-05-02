@@ -33,3 +33,27 @@ export const getAllIngredients = async (req: Request, res: Response) => {
   }
 };
 
+export const addIngredient = async (req: Request, res: Response) => {
+   try {
+     const { Name, Description, Recettes } = req.body;
+
+    if(!Name) {
+      res.status(400).json({ error: 'Name and Description are required' });
+      return;
+    }
+
+     const createdRecord = await base('Ingredient').create({
+       Name,
+       Description,
+       Recettes, 
+     });
+
+     res.status(201).json({
+       id: createdRecord.id,
+       fields: createdRecord.fields,
+     });
+   } catch (error) {
+     console.error('Error adding ingredient:', error);
+     res.status(500).json({ error: 'Internal server error' });
+  }
+};

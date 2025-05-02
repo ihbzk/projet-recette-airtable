@@ -7,5 +7,6 @@ dotenv.config();
 const router = express.Router();
 
 router.get('/api/recipes', RecipesController.getAllRecipes);
+router.post('/api/addRecipes', RecipesController.addRecipe);
 
 export default router;

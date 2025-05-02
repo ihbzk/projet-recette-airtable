@@ -40,3 +40,38 @@ export const getAllRecipes = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Failed to fetch recipes from Airtable" });
       }
 }
+
+export const addRecipe = async (req: Request, res: Response) => {
+    try {
+      const { Name, Description, Type, Servings, Ingredients, Instructions, Allergies, NutritionAnalysis, Image } = req.body;
+  
+      // Vérifier que les champs obligatoires sont présents
+      if (!Name || !Description || !Ingredients || !Instructions) {
+       res.status(400).json({ error: 'Name, Description, Ingredients and Instructions are required' });
+       return ;
+      }
+  
+      // Créer la recette dans Airtable
+      const createdRecord = await base('Recipes').create({
+        Name,
+        Description,
+        Type: Type || "", // Si Type n'est pas spécifié, une valeur vide sera envoyée
+        Servings: Servings || "",
+        Ingredients: Ingredients, // Doit être un tableau d'IDs d'ingrédients (liens)
+        Instructions,
+        Allergies: Allergies || "",
+        NutritionAnalysis: NutritionAnalysis || "",
+        Image: Image || "",
+      });
+  
+      // Répondre avec l'ID et les champs de la recette créée
+      res.status(201).json({
+        id: createdRecord.id,
+        fields: createdRecord.fields,
+      });
+    } catch (error) {
+      console.error('Error adding recipe:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  };
+  
