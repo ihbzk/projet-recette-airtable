@@ -9,11 +9,16 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 
 app.use(recipesRoutes);
-app.use( ingredientsRoutes);
+app.use(ingredientsRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
