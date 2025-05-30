@@ -9,7 +9,7 @@ const openai = new OpenAI({
 });
 
 dotenv.config();
-const tableName = "Recipes"; // Nom de la table dans Airtable
+const tableName = "Recipes"; 
 const base = new AirtablePlus({
   baseID: process.env.AIRTABLE_BASE_ID!,
   apiKey: process.env.AIRTABLE_TOKEN!,
@@ -195,5 +195,144 @@ export const generateRecipe = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error adding recipe:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+
+export const searchRecipes = async (req: Request, res: Response) => {
+  try {
+    const keyword = (req.query.keyword as string || "").toLowerCase();
+
+    const records = await base.read({
+      sort: [{ field: "CreatedAt", direction: "asc" }]
+    });
+
+    const recipes = records.map((record: any, index: number) => ({
+      index: index + 1,
+      id: record.id,
+      Name: record.fields["Name"] || "",
+      Description: record.fields["Description"] || "",
+      Type: record.fields["Type"] || "",
+      Servings: record.fields["Servings"] || "",
+      Ingredients: record.fields["Ingredients"] || "",
+      Instructions: record.fields["Instructions"] || "",
+      Allergies: record.fields["Allergies"] || "",
+      NutritionAnalysis: record.fields["NutritionAnalysis"] || "",
+      Image: record.fields["Image"] || "",
+      CreatedAt: record.fields["CreatedAt"] || "",
+    }));
+
+    const filteredRecipes = recipes.filter((recipe: any) =>
+      `${recipe.Name} ${recipe.Description} ${recipe.Ingredients} ${recipe.Instructions}`
+        .toLowerCase()
+        .includes(keyword)
+    );
+
+    res.json(filteredRecipes);
+  } catch (error) {
+    console.error("Error searching recipes:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+
+export const getLowCaloriesRecipes = async (req: Request, res: Response) => {
+  try {
+    const records = await base.read({ sort: [{ field: "CreatedAt", direction: "asc" }] });
+
+    const highCalories = records
+      .map((record: any, index: number) => {
+        const rawNutrition = record.fields["NutritionAnalysis"];
+        let calories = 0;
+
+        try {
+          const parsed = typeof rawNutrition === "string" ? JSON.parse(rawNutrition) : rawNutrition;
+          calories = parseFloat(parsed?.calories) || 0;
+        } catch (_) {}
+
+        return {
+          index: index + 1,
+          id: record.id,
+          Name: record.fields["Name"],
+          Calories: calories,
+          Description: record.fields["Description"],
+          Ingrediants: record.fields["Ingredients"],
+          Image: record.fields["Image"]
+        };
+      })
+      .filter((recipe: { Calories: number }) => recipe.Calories <= 700);
+
+    res.json(highCalories);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
+
+
+export const getHighCaloriesRecipes = async (req: Request, res: Response) => {
+  try {
+    const records = await base.read({ sort: [{ field: "CreatedAt", direction: "asc" }] });
+
+    const highCalories = records
+      .map((record: any, index: number) => {
+        const rawNutrition = record.fields["NutritionAnalysis"];
+        let calories = 0;
+
+        try {
+          const parsed = typeof rawNutrition === "string" ? JSON.parse(rawNutrition) : rawNutrition;
+          calories = parseFloat(parsed?.calories) || 0;
+        } catch (_) {}
+
+        return {
+          index: index + 1,
+          id: record.id,
+          Name: record.fields["Name"],
+          Calories: calories,
+          Description: record.fields["Description"],
+          Ingrediants: record.fields["Ingredients"],
+          Image: record.fields["Image"]
+        };
+      })
+      .filter((recipe: { Calories: number }) => recipe.Calories > 700);
+
+    res.json(highCalories);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
+
+
+export const getRecipeById = async (req: Request, res: Response) => {
+  const recipeId = req.params.id;
+
+  try {
+    const record = await base.find(recipeId); 
+
+    if (!record) {
+      res.status(404).json({ error: "Recette non trouvée" });
+    }
+
+    const recipe = {
+      id: record.id,
+      Name: record.fields["Name"],
+      Description: record.fields["Description"],
+      Type: record.fields["Type"],
+      Servings: record.fields["Servings"],
+      Ingredients: record.fields["Ingredients"],
+      Instructions: record.fields["Instructions"],
+      Allergies: record.fields["Allergies"],
+      NutritionAnalysis: record.fields["NutritionAnalysis"],
+      Image: record.fields["Image"]
+    };
+
+    res.json(recipe);
+  } catch (error) {
+    res.status(500).json({ error: "Erreur lors de la récupération de la recette" });
   }
 };
