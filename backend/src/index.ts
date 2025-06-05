@@ -3,6 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import recipesRoutes from "./routes/recipes";
 import ingredientsRoutes from "./routes/ingredient";
+import contactsRoutes from "./routes/contacts";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 
 app.use(recipesRoutes);
 app.use(ingredientsRoutes);
+app.use(contactsRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
