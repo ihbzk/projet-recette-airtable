@@ -257,11 +257,17 @@ export const getLowCaloriesRecipes = async (req: Request, res: Response) => {
         return {
           index: index + 1,
           id: record.id,
-          Name: record.fields["Name"],
+          Name: record.fields["Name"] || "",
+          Description: record.fields["Description"] || "",
+          Type: record.fields["Type"] || "",
+          Servings: record.fields["Servings"] || 0,
+          Ingredients: record.fields["Ingredients"] || "",
+          Instructions: record.fields["Instructions"] || "",
+          Allergies: record.fields["Allergies"] || "",
+          NutritionAnalysis: record.fields["NutritionAnalysis"] || "",
+          Image: record.fields["Image"] || "",
+          CreatedAt: record.fields["CreatedAt"] || "",
           Calories: calories,
-          Description: record.fields["Description"],
-          Ingrediants: record.fields["Ingredients"],
-          Image: record.fields["Image"]
         };
       })
       .filter((recipe: { Calories: number }) => recipe.Calories <= 700);
@@ -286,16 +292,24 @@ export const getHighCaloriesRecipes = async (req: Request, res: Response) => {
         try {
           const parsed = typeof rawNutrition === "string" ? JSON.parse(rawNutrition) : rawNutrition;
           calories = parseFloat(parsed?.calories) || 0;
-        } catch (_) {}
+        } catch (_) {
+          calories = 0;
+        }
 
         return {
           index: index + 1,
           id: record.id,
-          Name: record.fields["Name"],
+          Name: record.fields["Name"] || "",
+          Description: record.fields["Description"] || "",
+          Type: record.fields["Type"] || "",
+          Servings: record.fields["Servings"] || 0,
+          Ingredients: record.fields["Ingredients"] || "",
+          Instructions: record.fields["Instructions"] || "",
+          Allergies: record.fields["Allergies"] || "",
+          NutritionAnalysis: record.fields["NutritionAnalysis"] || "",
+          Image: record.fields["Image"] || "",
+          CreatedAt: record.fields["CreatedAt"] || "",
           Calories: calories,
-          Description: record.fields["Description"],
-          Ingrediants: record.fields["Ingredients"],
-          Image: record.fields["Image"]
         };
       })
       .filter((recipe: { Calories: number }) => recipe.Calories > 700);
