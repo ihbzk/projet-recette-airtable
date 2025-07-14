@@ -1,0 +1,13 @@
+# Configuration des Variables d'Environnement
+# Copiez ce contenu dans un fichier .env
+
+# API Unsplash - Remplacez par votre vraie clé
+UNSPLASH_ACCESS_KEY=votre_clé_unsplash_ici
+
+# Autres APIs (si vous les avez)
+# OPENAI_API_KEY=votre_clé_openai
+# AIRTABLE_BASE_ID=votre_base_id
+# AIRTABLE_TOKEN=votre_token
+
+# Configuration du serveur
+PORT=8000 
