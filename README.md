@@ -73,7 +73,12 @@ cd projet-recette-airtable
 ```
 
 ### **2. Configuration des Variables d'Environnement**
-Créez un fichier `.env` dans le dossier `backend/` :
+Créez un fichier `.env` dans le dossier racine du projet :
+```bash
+cp .env.example .env
+```
+
+Puis éditez le fichier `.env` avec vos vraies clés API :
 ```env
 # Airtable
 AIRTABLE_BASE_ID=votre_base_id
@@ -87,7 +92,13 @@ UNSPLASH_ACCESS_KEY=votre_clé_unsplash
 
 # Pexels (fallback)
 PEXELS_API_KEY=votre_clé_pexels
+
+# Configuration du serveur
+PORT=8000
+NODE_ENV=development
 ```
+
+⚠️ **IMPORTANT** : Ne jamais commiter le fichier `.env` sur Git ! Il contient vos clés API sensibles.
 
 ### **3. Installation des Dépendances**
 ```bash
@@ -182,6 +193,8 @@ projet-recette-airtable/
 
 ### **Sécurité**
 - Variables d'environnement pour les clés API
+- Fichier `.env` exclu du versioning Git
+- Template `.env.example` pour la configuration
 - Validation des entrées utilisateur
 - Gestion d'erreurs robuste
 - CORS configuré
